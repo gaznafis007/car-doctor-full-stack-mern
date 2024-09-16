@@ -1,6 +1,14 @@
-import services from "../../../../public/data/services.json"
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 
 const Services = () => {
+  const [services, setServices] = useState([]);
+  useEffect(()=>{
+    fetch('http://localhost:5000/services')
+    .then(res=> res.json())
+    .then(data=> setServices(data))
+  },[])
     return (
         <section className="my-6 lg:mx-6">
             <h1 className="text-lg text-red-500 font-bold text-center">Service</h1>
@@ -22,7 +30,7 @@ const Services = () => {
                               <h2 className="card-title">{service.title}</h2>
                               <div className="flex flex-row justify-end w-full mx-auto">
                               <p className="font-semibold text-red-500">Price: ${service.price}</p>
-                                <button className="text-red-500 font-bold">❯</button>
+                                <Link to={`/checkout/${services._id}`} className="text-red-500 font-bold">❯</Link>
                               </div>
                             </div>
                           </div>
