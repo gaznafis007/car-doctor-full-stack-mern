@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import img from "../../assets/images/login/login.svg"
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 
 const SignUp = () => {
-    const {signUp} = useContext(AuthContext)
+    const {signUp, getUser} = useContext(AuthContext)
+    const navigate = useNavigate()
     const handleSignUp = event =>{
         event.preventDefault();
         const form = event.target;
@@ -16,11 +17,16 @@ const SignUp = () => {
             email,
             pass
         }
-        console.log(user)
+        // console.log(user)
         signUp(email, pass)
+        // eslint-disable-next-line no-unused-vars
         .then((res)=>{
+            getUser(name)
             const user = res.user
+            // logOut()
             console.log(user)
+            navigate("/")
+
         })
         .catch((error)=>{
             const errorMessage = error.message
