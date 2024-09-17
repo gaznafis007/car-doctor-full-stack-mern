@@ -34,6 +34,8 @@ async function run() {
       .db("car-doctor-database")
       .collection("services");
 
+    const bookingCollection = client.db("car-doctor-database").collection("bookings");
+
     app.get("/services", async (req, res) => {
       const query = {};
       const result = await serviceCollection.find(query).toArray();
@@ -55,6 +57,11 @@ async function run() {
       // console.log(result)
       res.send(result);
     });
+    app.post("/bookings", async(req,res) =>{
+      const booking = req.body;
+      const result = await bookingCollection.insertOne(booking);
+      res.send(result)
+    })
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
