@@ -1,18 +1,16 @@
-const express = require('express');
-const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const express = require("express");
+const cors = require("cors");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-require('dotenv').config();
+require("dotenv").config();
 
-app.get("/", (req,res) =>{
-    res.send(`car doctor server is running on port: ${port}`);
-})
-
-
+app.get("/", (req, res) => {
+  res.send(`car doctor server is running on port: ${port}`);
+});
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.zwhzs.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -22,7 +20,7 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
 });
 
 async function run() {
@@ -31,14 +29,32 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    
-    const serviceCollection = client.db('car-doctor-database').collection('services');
 
-    app.get("/services", async (req,res) =>{
-        const query = {};
-        const result = await serviceCollection.find(query).toArray();
-        res.send(result)
-    })
+    const serviceCollection = client
+      .db("car-doctor-database")
+      .collection("services");
+
+    app.get("/services", async (req, res) => {
+      const query = {};
+      const result = await serviceCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/services/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = new ObjectId(id);
+      const options = {
+        projection:{
+          title: 1, 
+          img:1, 
+          price: 1, 
+          service_id: 1
+        }
+      }
+      const result = await serviceCollection.findOne(query, options);
+      // console.log(id)
+      // console.log(result)
+      res.send(result);
+    });
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
@@ -46,7 +62,6 @@ async function run() {
 }
 run().catch(console.dir);
 
-
-app.listen(port, ()=>{
-    console.log(`Server is running on ${port} port`)
-})
+app.listen(port, () => {
+  console.log(`Server is running on ${port} port`);
+});
