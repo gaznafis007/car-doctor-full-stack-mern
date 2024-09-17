@@ -23,6 +23,11 @@ const Navbar = () => {
     <li>
     <Link> Services </Link>
     </li>
+    {
+      user?.uid ? <li>
+      <Link to="/bookings"> Bookings </Link>
+      </li> : ''
+    }
     <li>
     <Link> Blog </Link>
     </li>

@@ -13,7 +13,7 @@ const Checkout = () => {
 
         const form = event.target;
         const userName = form.name.value;
-        const email = user ? user.email : form.email.value;
+        const email = user?.uid ? user.email : form.email.value;
         const date = form.date.value;
         const number = form.number.value;
         const message = form.message.value;
@@ -37,7 +37,13 @@ const Checkout = () => {
             body: JSON.stringify(booking)
         })
         .then(res => res.json())
-        .then(data => console.log(data))
+        .then(data => {
+            console.log(data);
+            if(data.acknowledged){
+                alert('Your booking is placed!')
+                form.reset()
+            }
+        })
     }
     return (
         <section>
