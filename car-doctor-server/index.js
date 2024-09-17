@@ -61,6 +61,11 @@ async function run() {
       const booking = req.body;
       const result = await bookingCollection.insertOne(booking);
       res.send(result)
+    });
+    app.get("/bookings", async(req,res) =>{
+      const query = {};
+      const result = await bookingCollection.find(query).toArray();
+      res.send(result)
     })
   } finally {
     // Ensures that the client will close when you finish/error
