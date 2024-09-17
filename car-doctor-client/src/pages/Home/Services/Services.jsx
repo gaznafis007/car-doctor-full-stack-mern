@@ -30,7 +30,7 @@ const Services = () => {
                               <h2 className="card-title">{service.title}</h2>
                               <div className="flex flex-row justify-end w-full mx-auto">
                               <p className="font-semibold text-red-500">Price: ${service.price}</p>
-                                <Link to={`/checkout/${services._id}`} className="text-red-500 font-bold">❯</Link>
+                                <Link to={`/checkout/${service._id}`} className="text-red-500 font-bold">❯</Link>
                               </div>
                             </div>
                           </div>
