@@ -26,7 +26,8 @@ const Checkout = () => {
             number,
             serviceImage: img,
             message,
-            service_id
+            service_id,
+            serviceName: title
         }
         
         fetch("http://localhost:5000/bookings", {
