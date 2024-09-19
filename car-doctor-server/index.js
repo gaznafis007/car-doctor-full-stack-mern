@@ -121,7 +121,7 @@ async function run() {
       const result = await bookingCollection.updateOne(query, updatedDoc);
       res.send(result)
     })
-    app.delete("/bookings/:id", async(req,res) =>{
+    app.delete("/bookings/:id", verifyJWT, async(req,res) =>{
       const id = req.params.id;
       const query = { _id : new ObjectId(id)}
       const result = await bookingCollection.deleteOne(query);

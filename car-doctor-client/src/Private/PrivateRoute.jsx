@@ -12,7 +12,7 @@ const PrivateRoute = ({children}) => {
     if(loading){
         return <h1 className="text-center text-5xl text-red-500 font-sans font-bold animate-ping">loading</h1>
     }
-    return <Navigate to ="/" state={{from: location}} replace></Navigate>;
+    return <Navigate to ="/login" state={{from: location}} replace></Navigate>;
 };
 
 export default PrivateRoute;

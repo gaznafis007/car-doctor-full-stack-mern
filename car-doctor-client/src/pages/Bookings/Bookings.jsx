@@ -22,16 +22,22 @@ const Bookings = () => {
 
   const handleBookingDelete = id =>{
     // console.log(id)
-    fetch(`http://localhost:5000/bookings/${id}`, {
-      method: 'DELETE'
-    })
-    .then(res => res.json())
-    .then(data =>{
-      console.log(data);
-      if(data.acknowledged){
+    // fetch(`http://localhost:5000/bookings/${id}`, {
+    //   method: 'DELETE'
+    // })
+    // .then(res => res.json())
+    // .then(data =>{
+    //   console.log(data);
+    //   
+    //   }
+    // })
+    const url = `http://localhost:5000/bookings/${id}`
+    axios.delete(url, {withCredentials: true})
+    .then (res => {
+      if(res.data.acknowledged){
         const remaining = bookings.filter(booking => booking._id !== id);
-      setBookings(remaining)
-      }
+        setBookings(remaining)
+  }
     })
   }
   const handleBookingStatus = id =>{
