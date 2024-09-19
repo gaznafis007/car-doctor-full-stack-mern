@@ -24,7 +24,7 @@ const Login = () => {
             const user = res.user;
             // console.log(user)
             if(user){
-              axios.post("http://localhost:5000/jwt", {email})
+              axios.post("http://localhost:5000/jwt", {email}, {withCredentials: true})
               .then(data =>{
                 if(data.data.success){
                   navigate(location?.state ? location?.state?.from?.pathname : "/")
