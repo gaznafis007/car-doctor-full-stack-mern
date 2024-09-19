@@ -1,11 +1,17 @@
 const express = require("express");
 const cors = require("cors");
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken')
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173'],
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser())
 require("dotenv").config();
 
 app.get("/", (req, res) => {
@@ -57,6 +63,21 @@ async function run() {
       // console.log(result)
       res.send(result);
     });
+
+    app.post("/jwt", async(req,res) =>{
+      const data = req.body;
+      // console.log(data.email)
+      const token = jwt.sign({userEmail: data.email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'});
+      console.log(token)
+      res.cookie('accessToken', token, {
+       httpOnly: true,
+       secure: false, 
+        sameSite: 'none'
+      })
+      .send({success: true})
+
+    })
+
     app.post("/bookings", async(req,res) =>{
       const booking = req.body;
       const result = await bookingCollection.insertOne(booking);

@@ -1,11 +1,13 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/images/login/login.svg"
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
+import axios from 'axios'
 
 const Login = () => {
     const {login} = useContext(AuthContext);
     const navigate = useNavigate()
+    const location = useLocation()
     const handleLogin = event =>{
         event.preventDefault();
         const form = event.target;
@@ -21,7 +23,15 @@ const Login = () => {
         .then((res)=>{
             const user = res.user;
             // console.log(user)
-            navigate("/")
+            if(user){
+              axios.post("http://localhost:5000/jwt", {email})
+              .then(data =>{
+                if(data.data.success){
+                  navigate(location?.state ? location?.state?.from?.pathname : "/")
+                }
+              })
+            }
+            // navigate("/")
         })
         .catch((error)=>{
             const errorMessage = error.message;
