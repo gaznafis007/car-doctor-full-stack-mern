@@ -1,33 +1,35 @@
 const express = require("express");
 const cors = require("cors");
-const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const port = process.env.PORT || 5000;
 const app = express();
 
-app.use(cors({
-  origin: ['http://localhost:5173'],
-  credentials: true
-}));
+app.use(cors(
+  {
+    origin: ['http://localhost:5173'],
+    credentials: true
+  }
+));
 app.use(express.json());
 app.use(cookieParser())
 require("dotenv").config();
 
 
-const verifyJWT = (req,res,next) =>{
-  const token = req.cookies.accessToken;
-  if(!token){
-    return res.status(401).send({message: "unauthorized access"})
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) =>{
-    if(err){
-      return res.status(404).send({message: "error occurred"})
-    }
-    req.user = decoded
-    next()
-  })
-}
+// const verifyJWT = (req,res,next) =>{
+//   const token = req.cookies.accessToken;
+//   if(!token){
+//     return res.status(401).send({message: "unauthorized access"})
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) =>{
+//     if(err){
+//       return res.status(404).send({message: "error occurred"})
+//     }
+//     req.user = decoded
+//     next()
+//   })
+// }
 
 app.get("/", (req, res) => {
   res.send(`car doctor server is running on port: ${port}`);
@@ -79,29 +81,42 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/jwt", async(req,res) =>{
-      const data = req.body;
-      // console.log(data.email)
-      const token = jwt.sign({userEmail: data.email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'});
-      // console.log(token)
-      res.cookie('accessToken', token, {
-       httpOnly: true,
-       secure: false, 
+    // app.post("/jwt", async(req,res) =>{
+    //   const data = req.body;
+    //   // console.log(data.email)
+    //   const token = jwt.sign({userEmail: data.email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'});
+    //   // console.log(token)
+    //   res.cookie('accessToken', token, {
+    //    httpOnly: true,
+    //    secure: false, 
+    //   })
+    //   .send({success: true})
+
+    // })
+    app.post("/jwt", async(req, res) =>{
+      const user = req.body;
+      const token = jwt.sign({email: user.email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'})
+      console.log(token)
+      res.cookie('token', token, {
+        httpOnly: true,
+        secure: false,
+        sameSite: 'none'
       })
-      .send({success: true})
-
+      .send({message:'success'})
     })
-
+    app.get("/logOut", async(req,res) =>{
+      res.clearCookie('token', {
+        maxAge: 0
+      })
+      .send({message: 'you are logged out!'})
+    })
     app.post("/bookings", async(req,res) =>{
       const booking = req.body;
       const result = await bookingCollection.insertOne(booking);
       res.send(result)
     });
-    app.get("/bookings", verifyJWT, async(req,res) =>{
+    app.get("/bookings", async(req,res) =>{
       const email = req.query.email;
-      if(req.query.email !== req.user.userEmail){
-        return res.status(403).send({message: 'forbidden access'})
-      }
       let query = {};
       if(email){
         query = {email}
@@ -121,7 +136,7 @@ async function run() {
       const result = await bookingCollection.updateOne(query, updatedDoc);
       res.send(result)
     })
-    app.delete("/bookings/:id", verifyJWT, async(req,res) =>{
+    app.delete("/bookings/:id",  async(req,res) =>{
       const id = req.params.id;
       const query = { _id : new ObjectId(id)}
       const result = await bookingCollection.deleteOne(query);

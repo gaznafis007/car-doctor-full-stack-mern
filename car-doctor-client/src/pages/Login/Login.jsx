@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/images/login/login.svg"
 import { useContext } from "react";
@@ -22,16 +23,8 @@ const Login = () => {
         login(email, pass)
         .then((res)=>{
             const user = res.user;
-            // console.log(user)
-            if(user){
-              axios.post("http://localhost:5000/jwt", {email}, {withCredentials: true})
-              .then(data =>{
-                if(data.data.success){
-                  navigate(location?.state ? location?.state?.from?.pathname : "/")
-                }
-              })
-            }
-            // navigate("/")
+            console.log(user)
+            navigate(location?.state ? location?.state?.from?.pathname : "/")
         })
         .catch((error)=>{
             const errorMessage = error.message;

@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import useAxios from "../../../hooks/useAxios";
+
 
 
 const Services = () => {
   const [services, setServices] = useState([]);
+  const axiosSecure = useAxios()
   useEffect(()=>{
-    fetch('http://localhost:5000/services')
-    .then(res=> res.json())
-    .then(data=> setServices(data))
+    // fetch('http://localhost:5000/services')
+    // .then(res=> res.json())
+    // .then(data=> setServices(data))
+    axiosSecure.get('/services')
+    .then(res=>setServices(res.data))
   },[])
+
     return (
         <section className="my-6 lg:mx-6">
             <h1 className="text-lg text-red-500 font-bold text-center">Service</h1>
