@@ -33,6 +33,7 @@ require("dotenv").config();
 
 const verifyJWT = (req,res,next) =>{
   const token = req.cookies.token
+  console.log(token)
   if(!token){
     return res.status(401).send({message: "unauthorized"})
   }
@@ -141,7 +142,7 @@ async function run() {
       const result = await bookingCollection.find(query).toArray();
       res.send(result)
     })
-    app.put("/bookings/:id", async(req,res) =>{
+    app.put("/bookings/:id", verifyJWT, async(req,res) =>{
       const id = req.params.id;
       const status = req.body
       const query = {_id : new ObjectId(id)};
@@ -153,7 +154,7 @@ async function run() {
       const result = await bookingCollection.updateOne(query, updatedDoc);
       res.send(result)
     })
-    app.delete("/bookings/:id",  async(req,res) =>{
+    app.delete("/bookings/:id", verifyJWT, async(req,res) =>{
       const id = req.params.id;
       const query = { _id : new ObjectId(id)}
       const result = await bookingCollection.deleteOne(query);

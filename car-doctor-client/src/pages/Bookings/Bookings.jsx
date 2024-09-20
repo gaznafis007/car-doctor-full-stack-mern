@@ -1,11 +1,11 @@
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthProvider";
-import axios from "axios"
+import { useEffect, useState } from "react";
 import BookingRow from "./BookingRow/BookingRow";
 import useAxios from "../../hooks/useAxios";
+import useAuth from "../../hooks/useAuth";
 
 const Bookings = () => {
-  const { user } = useContext(AuthContext);
+  const auth = useAuth()
+  const { user } = auth
   const [bookings, setBookings] = useState([]);
   const axiosSecure = useAxios()
   useEffect(() => {
@@ -17,7 +17,7 @@ const Bookings = () => {
     //   });
     axiosSecure.get(`/bookings?email=${user?.email}`)
     .then(res => setBookings(res.data))
-  }, [user?.email]);
+  }, [user?.email, axiosSecure]);
 
   const handleBookingDelete = id =>{
     // console.log(id)
@@ -31,7 +31,7 @@ const Bookings = () => {
     //   }
     // })
     const url = `http://localhost:5000/bookings/${id}`
-    axios.delete(url, {withCredentials: true})
+    axiosSecure.delete(url)
     .then (res => {
       if(res.data.acknowledged){
         const remaining = bookings.filter(booking => booking._id !== id);
@@ -40,16 +40,17 @@ const Bookings = () => {
     })
   }
   const handleBookingStatus = id =>{
-    fetch(`http://localhost:5000/bookings/${id}`,{
-      method: 'PUT',
-      headers:{
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify({status: "confirmed"})
-    })
-    .then(res => res.json())
-    .then(data =>{
-      console.log(data);
+    // fetch(`http://localhost:5000/bookings/${id}`,{
+    //   method: 'PUT',
+    //   headers:{
+    //     'content-type': 'application/json'
+    //   },
+    //   body: JSON.stringify({status: "confirmed"})
+    // })
+    // .then(res => res.json())
+    axiosSecure.put(`/bookings/${id}`, {status: "confirmed"})
+    .then(res =>{
+      console.log(res.data);
       const updatedBooking = bookings.find(booking => booking._id == id);
       const updatedBookings = bookings.filter(booking =>booking._id !== id);
 

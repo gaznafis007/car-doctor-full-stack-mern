@@ -1,12 +1,12 @@
 /* eslint-disable no-unused-vars */
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import img from "../../assets/images/login/login.svg"
-import { useContext } from "react";
-import { AuthContext } from "../../context/AuthProvider";
-import axios from 'axios'
+import useAuth from "../../hooks/useAuth";
+
 
 const Login = () => {
-    const {login} = useContext(AuthContext);
+  const auth = useAuth()
+    const {login} = auth;
     const navigate = useNavigate()
     const location = useLocation()
     const handleLogin = event =>{
