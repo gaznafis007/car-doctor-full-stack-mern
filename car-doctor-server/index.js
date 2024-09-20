@@ -31,6 +31,21 @@ require("dotenv").config();
 //   })
 // }
 
+const verifyJWT = (req,res,next) =>{
+  const token = req.cookies.token
+  if(!token){
+    return res.status(401).send({message: "unauthorized"})
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) =>{
+    if(err){
+      return res.status(401).send({message: 'unauthorized'})
+    }else{
+      req.user = decoded
+      next()
+    }
+  })
+}
+
 app.get("/", (req, res) => {
   res.send(`car doctor server is running on port: ${port}`);
 });
@@ -96,11 +111,10 @@ async function run() {
     app.post("/jwt", async(req, res) =>{
       const user = req.body;
       const token = jwt.sign({email: user.email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'})
-      console.log(token)
+      // console.log(token)
       res.cookie('token', token, {
         httpOnly: true,
         secure: false,
-        sameSite: 'none'
       })
       .send({message:'success'})
     })
@@ -115,8 +129,11 @@ async function run() {
       const result = await bookingCollection.insertOne(booking);
       res.send(result)
     });
-    app.get("/bookings", async(req,res) =>{
+    app.get("/bookings", verifyJWT, async(req,res) =>{
       const email = req.query.email;
+      if(req.user.email !== email){
+        return res.status(403).send({message:'forbidden'})
+      }
       let query = {};
       if(email){
         query = {email}
