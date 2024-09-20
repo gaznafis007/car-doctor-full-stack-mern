@@ -9,7 +9,6 @@ const useAuth = () => {
     const axiosSecure = useAxios()
     useEffect(()=>{
         axiosSecure.interceptors.response.use((res) =>{
-            console.log('hole hole')
             return res
         }, (err) =>{
             if(err){
